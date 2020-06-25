@@ -32,8 +32,8 @@ const productSchema = new mongoose.Schema({
 
 productSchema.virtual('cart', {
     ref : 'Cart',
-    localField:"_id",
-    foreignField : "products.productId"
+    localField:"name",
+    foreignField : "products.productName"
  })
 
 

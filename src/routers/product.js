@@ -29,13 +29,13 @@ router.get('/api/products', async (req,res) => {
 router.get('/api/products/:name', async (req,res) => {
     const name = req.params.name.toString()
     const product = await Product.find({"name" : name})
-
+    
     if(!product) {
         return res.status(404).send()
     }
     
     try {
-        res.status(200).send(product)
+        res.send(product)
     }catch(e) {
         res.send(404).send()
     }
@@ -52,7 +52,7 @@ router.get('/api/products/:marker', async (req,res) => {
     }
     
     try {
-        res.status(200).send(product)
+        res.send(product)
     }catch(e) {
         res.send(404).send()
     }
@@ -65,6 +65,7 @@ router.patch('/api/products/:name', async(req,res) => {
     const name = req.params.name.toString()
     const allowedUpdates = ['name', 'price', 'InStock', 'stock']
     const updates = Object.keys(req.body)
+    
 
     const isValidOperation = updates.every((update) => {
         return allowedUpdates.includes(update)
@@ -74,14 +75,13 @@ router.patch('/api/products/:name', async(req,res) => {
         return res.status(400).send({"error" : "Invalid Operation"})
     }
 
-    try {
-        const product = await Product.findOneAndUpdate(name, req.body, { new : true, runValidators : true})
+    try {       
+        const filter = {name: name}
+        const product = await Product.findOneAndUpdate(filter , req.body , { new : true})
 
-        if(!product) {
-            return res.status(404).send()
-        }
-
-        res.send(product)
+         console.log(product)
+         await product.save()
+         res.send(product)
 
     }catch(e) {
         res.status(400).send()

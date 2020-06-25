@@ -5,6 +5,7 @@ const router = new express.Router()
 
 
 router.post('/api/users', async (req,res) => {
+    //console.log(req)
     const user = new User(req.body)
   
     try{
@@ -14,18 +15,21 @@ router.post('/api/users', async (req,res) => {
     res.send({user,token})
 
     }catch(e) {
-        res.status(400).send()
+        res.status(400).send(e)
+        console.log(e)
     }
 })
 
 router.post('/api/users/login', async (req,res) => {
+    //console.log(req)
     try {
         const user = await User.findByCredentials(req.body.email,req.body.password)
         const token = await user.generateAuthToken()
         res.send({user,token})
 
-    }catch(e) {
-        res.status(400).send()
+    }catch(e){
+         res.status(400).send(e)
+         console.log(e)
     }
 
 })
@@ -40,7 +44,7 @@ router.post('/api/users/logout' ,auth , async (req,res) => {
 
         res.send()
     }catch (e) {
-        res.status(500).send()
+        res.status(500).send(e)
     }
 
 })
@@ -51,7 +55,7 @@ router.post('/api/users/logoutAll', auth, async (req,res) => {
         await req.user.save()
         res.send()
     }catch(e) {
-        res.status(500).send()
+        res.status(500).send(e)
     }
 
 })
@@ -63,7 +67,7 @@ router.get('/api/users/me', auth , async (req,res) => {
 
 router.patch('/api/users/me', auth, async(req,res) => {
     
-    const allowedUpdates = ['name', 'email', 'password', 'address']
+    const allowedUpdates = ['name', 'email', 'password', 'address', 'orders']
     const updates = Object.keys(req.body)
 
     const isValidOperation = updates.every((update) => {
@@ -87,7 +91,7 @@ router.patch('/api/users/me', auth, async(req,res) => {
         res.send(req.user)
 
     }catch(e) {
-        res.status(400).send()
+        res.status(400).send(e)
     }
 })
 
@@ -98,9 +102,26 @@ router.delete('/api/users/me', auth , async (req,res) => {
 
         res.send(req.user)
     }catch(e) {
-        res.status(400).send()
+        res.status(400).send(e)
     }
     
 })
+
+
+router.post('/api/users/me/orders', auth, async(req,res) => {
+    
+     try {   
+       const newOrder = req.body.orders
+       req.user.orders = req.user.orders.concat({...newOrder})
+ 
+        await req.user.save()
+        res.send(req.user)
+
+    }catch(e) {
+        res.status(400).send(e)
+    }
+})
+
+
 
 module.exports = router
