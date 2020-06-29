@@ -10,7 +10,7 @@ router.post('/api/products', async (req,res) => {
     await product.save()
     res.status(200).send(product)
     }catch(e) {
-        res.status(400).send()
+        res.status(400).send(e)
     }
 })
 
@@ -21,7 +21,7 @@ router.get('/api/products', async (req,res) => {
     try {
         res.status(200).send(products)
     }catch(e) {
-        res.send(500).send()
+        res.send(500).send({error : "Couldn't fetch products"})
     }
 })
 
@@ -79,7 +79,6 @@ router.patch('/api/products/:name', async(req,res) => {
         const filter = {name: name}
         const product = await Product.findOneAndUpdate(filter , req.body , { new : true})
 
-         console.log(product)
          await product.save()
          res.send(product)
 

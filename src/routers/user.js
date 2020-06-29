@@ -5,31 +5,25 @@ const router = new express.Router()
 
 
 router.post('/api/users', async (req,res) => {
-    //console.log(req)
     const user = new User(req.body)
   
     try{
     await user.save()
-
     const token = await user.generateAuthToken()
     res.send({user,token})
 
     }catch(e) {
-        res.status(400).send(e)
-        console.log(e)
+        res.send({error : "Unable to sign Up"})
     }
 })
 
 router.post('/api/users/login', async (req,res) => {
-    //console.log(req)
     try {
         const user = await User.findByCredentials(req.body.email,req.body.password)
         const token = await user.generateAuthToken()
         res.send({user,token})
-
     }catch(e){
-         res.status(400).send(e)
-         console.log(e)
+         res.send({error : "Unable to Sign In"})
     }
 
 })
@@ -44,7 +38,7 @@ router.post('/api/users/logout' ,auth , async (req,res) => {
 
         res.send()
     }catch (e) {
-        res.status(500).send(e)
+        res.send({error : "Unable to Logout"})
     }
 
 })
@@ -55,7 +49,7 @@ router.post('/api/users/logoutAll', auth, async (req,res) => {
         await req.user.save()
         res.send()
     }catch(e) {
-        res.status(500).send(e)
+        res.send({error : "Unable to Logout"})
     }
 
 })
@@ -118,7 +112,7 @@ router.post('/api/users/me/orders', auth, async(req,res) => {
         res.send(req.user)
 
     }catch(e) {
-        res.status(400).send(e)
+        res.send({error : "Couldn't place order"})
     }
 })
 

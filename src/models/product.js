@@ -21,7 +21,7 @@ const productSchema = new mongoose.Schema({
     stock : {
         type : Number
     },
-    marker : {
+    category : {
         type : String,
         required: true
     }
